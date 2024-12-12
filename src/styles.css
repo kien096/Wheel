@@ -6,8 +6,8 @@
 
 body {
   min-height: 100vh;
-/*   background-image: url("https://unsplash.com/photos/assorted-type-of-leaves-lying-on-white-panel-VDXtVYJVj7A");
-  background-size: cover;
+  /* background-image: url("/annie-spratt-VDXtVYJVj7A-unsplash.jpg"); */
+  /* background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   margin: 0; */
@@ -19,7 +19,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  /* padding: 20px; */
   width: 100%;
   height: 100vh;
 }
