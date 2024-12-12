@@ -1,7 +1,11 @@
+// Đoạn mã hoàn chỉnh để xử lý vòng quay và hiển thị popup kết quả
+
+// Ẩn vòng quay lúc đầu
 document.getElementById("spin_the_wheel").style.display = "none";
 
 let sectors = [];
 const minSectors = 2; // Minimum sectors required to start
+let userName = ""; // Store the user's name
 
 // Add these variables at the top
 let ctx;
@@ -51,13 +55,23 @@ function removeSector(index) {
   updateSectorsList();
 }
 
+// Handle name form submission
+document.getElementById("nameForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  userName = document.getElementById("nameInput").value; // Store the user's name
+  // document.getElementById("nameForm").style.display = "none";
+  document.querySelector(".input-name").style.display = "none";
+  document.querySelector(".input-section").style.display = "block";
+  document.getElementById("addSectorForm").style.display = "flex";
+});
+
 // Modify addSectorForm event listener
 document.getElementById("addSectorForm").addEventListener("submit", (e) => {
   e.preventDefault();
   const label = document.getElementById("prizeInput").value;
 
   if (!isValidNumber(label)) {
-    alert("Please enter a valid number.");
+    alert("Nhập số đê! Bạn nhập chữ ý muốn gì hả :)");
     return;
   }
 
@@ -82,7 +96,7 @@ document.getElementById("startGame").addEventListener("click", () => {
   ctx = canvas.getContext("2d");
   dia = ctx.canvas.width;
   rad = dia / 2;
-  arc = TAU / sectors.length;
+  arc = 360 / sectors.length;
 
   // Clear and draw initial wheel
   ctx.clearRect(0, 0, dia, dia);
@@ -110,45 +124,43 @@ const rand = (m, M) => Math.random() * (M - m) + m;
 const tot = () => sectors.length;
 
 const spinEl = document.querySelector("#spin");
-const PI = Math.PI;
-const TAU = 2 * PI;
-
 const friction = 0.991; // 0.995=soft, 0.99=mid, 0.98=hard
 let angVel = 0; // Angular velocity
-let ang = 0; // Angle in radians
+let ang = -180; // Angle in radians
 
 let spinButtonClicked = false;
 
-const getIndex = () => Math.floor((ang + PI / 2) / arc) % sectors.length;
+const getIndex = () => {
+  const adjustedAngle = (360 - (ang * 180) / Math.PI + 0) % 360; // Adjust for 3 o'clock position
+  return Math.floor(adjustedAngle / (360 / sectors.length)) % sectors.length;
+};
 
 // Update drawSector function to include decorative elements
 function drawSector(sector, i) {
-  const ang = arc * i;
+  const ang = (360 / sectors.length) * i;
   ctx.save();
 
   // Draw sector
   ctx.beginPath();
   ctx.fillStyle = sector.color;
   ctx.moveTo(rad, rad);
-  ctx.arc(rad, rad, rad, ang, ang + arc);
+  ctx.arc(
+    rad,
+    rad,
+    rad,
+    (ang * Math.PI) / 180,
+    ((ang + 360 / sectors.length) * Math.PI) / 180
+  );
   ctx.lineTo(rad, rad);
   ctx.fill();
 
   // Draw text
   ctx.translate(rad, rad);
-  ctx.rotate(ang + arc / 2);
+  ctx.rotate(((ang + 360 / sectors.length / 2) * Math.PI) / 180);
   ctx.textAlign = "right";
   ctx.fillStyle = "#333333";
-  ctx.font = "bold 30px 'Lato', sans-serif";
-  ctx.fillText(sector.label, rad - 50, 10);
-
-  // Draw decorative elements
-  ctx.rotate(-arc / 2);
-  ctx.textAlign = "center";
-  ctx.font = "20px 'Lato', sans-serif";
-  ctx.fillStyle = "#ff69b4"; // Pink color for romantic symbols
-  ctx.fillText("❤", rad - 100, 10); // Heart symbol
-  ctx.fillText("🌹", rad - 150, 10); // Rose symbol
+  ctx.font = "bold 20px Arial";
+  ctx.fillText(sector.label, rad - 10, 10);
 
   ctx.restore();
 }
@@ -158,7 +170,7 @@ function rotate() {
   ctx.clearRect(0, 0, dia, dia);
   ctx.save();
   ctx.translate(rad, rad);
-  ctx.rotate(ang); // Adjust rotation to ensure the answer is at the top
+  ctx.rotate(ang); // Adjust rotation to ensure the answer is at the 3 o'clock position
   ctx.translate(-rad, -rad);
   sectors.forEach((sector, i) => drawSector(sector, i));
   ctx.restore();
@@ -166,27 +178,26 @@ function rotate() {
 
 // Update the frame function to reset spinning state
 function frame() {
-  if (!angVel && spinButtonClicked) {
-    const finalSector = sectors[getIndex()];
+  if (!angVel && isSpinning) {
+    // Calculate the final angle
+    const adjustedAngle = ((ang * 180) / Math.PI) % 360;
+    const finalAngle = (360 - adjustedAngle + 0) % 360; // Adjust for 3 o'clock position
+    const finalIndex = Math.floor(finalAngle / (360 / sectors.length)); // Calculate the sector index
+
+    // Get the final sector
+    const finalSector = sectors[finalIndex];
+
+    // Show the result popup
     events.fire("spinEnd", finalSector);
-    spinButtonClicked = false;
-    isSpinning = false;
-
-    // Store final rotation
-    currentRotation = ang;
-
-    // Reset for next spin
     resetWheel();
     return;
   }
 
   angVel *= friction;
-  if (angVel < 0.002) {
-    angVel = 0;
-  }
+  if (angVel < 0.002) angVel = 0;
 
   ang += angVel;
-  ang %= TAU;
+  ang %= 2 * Math.PI;
   rotate();
 }
 
@@ -240,6 +251,6 @@ window.onclick = function (event) {
 
 events.addListener("spinEnd", (sector) => {
   console.log(`Woop! You won ${sector.label}`);
-  resultText.textContent = `Ghê chưa :)) bé húp được ${sector.label} ngàn`;
+  resultText.textContent = `Uôi! bé ${userName} húp được ${sector.label} nghìn`;
   modal.style.display = "block";
 });
