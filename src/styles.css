@@ -6,11 +6,11 @@
 
 body {
   min-height: 100vh;
-  background-image: url("https://unsplash.com/photos/assorted-type-of-leaves-lying-on-white-panel-VDXtVYJVj7A");
+/*   background-image: url("https://unsplash.com/photos/assorted-type-of-leaves-lying-on-white-panel-VDXtVYJVj7A");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  margin: 0;
+  margin: 0; */
   font-family: "Lato", sans-serif;
 }
 
