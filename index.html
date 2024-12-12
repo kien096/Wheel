@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>Welcome to Spin the Wheel</title>
     <meta charset="UTF-8" />
@@ -17,19 +17,32 @@
         <div id="spin">SPIN</div>
       </div>
 
-      <div class="input-section">
-        <h2>Thêm giải thưởng vào vòng quay</h2>
-        <form id="addSectorForm">
+      <div class="input-name">
+        <h2>Ủa bé tên gì ?</h2>
+        <form id="nameForm" class="form">
+          <input
+            type="text"
+            id="nameInput"
+            placeholder="Nhập tên của bé"
+            required
+          />
+          <button type="submit">Chắc chắn !</button>
+        </form>
+      </div>
+
+      <div class="input-section" style="display: none">
+        <h2>Nhập kết quả vòng quay</h2>
+        <form id="addSectorForm" class="form">
           <input
             type="text"
             id="prizeInput"
-            placeholder="Nhập giải thưởng"
+            placeholder="Nhập kết quả"
             required
           />
-          <button type="submit">Thêm</button>
+          <button type="Thêm">Add</button>
         </form>
         <div id="sectors-list"></div>
-        <button id="startGame" disabled>Bắt đầu</button>
+        <button id="startGame" disabled>Lét gô</button>
       </div>
     </div>
 
